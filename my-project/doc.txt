@@ -8,3 +8,5 @@
   Photo:
   Main page: data (url of pictures)
   two components: Slider, navigation (next, prev button, canBack, canPrev, pos)
+
+settings - set component size
