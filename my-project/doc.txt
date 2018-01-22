@@ -1,0 +1,10 @@
+  <button v-on:click="greet">Greet</button>
+  //communicate with methods to add components
+  <component is="create-post"></component>
+  <button v-on:click="say('hi')">Say hi</button>
+
+  page count to 1
+
+  Photo:
+  Main page: data (url of pictures)
+  two components: Slider, navigation (next, prev button, canBack, canPrev, pos)
