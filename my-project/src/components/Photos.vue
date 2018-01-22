@@ -1,7 +1,7 @@
 <template>
   <div id="Photos">
     <button v-on:click='componentChange()'>Button</button>
-    <slider photos="photoList"></slider>
+    <slider :photos="photoList"></slider>
   </div>
 </template>
 
@@ -15,7 +15,10 @@
         return {
             photoList: [
               'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg',
-              'https://www.computerhope.com/jargon/j/jpg.jpg'
+              'https://www.computerhope.com/jargon/j/jpg.jpg',
+              'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg',
+              'https://www.computerhope.com/jargon/j/jpg.jpg',
+              'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg'
             ],
             imageLink0: 'https://www.computerhope.com/jargon/j/jpg.jpg',
             imageLink: '.././assets/logo.png',
