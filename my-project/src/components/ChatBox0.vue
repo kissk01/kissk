@@ -18,15 +18,18 @@
             <ul class="ChatBox__OnlineUsers">
                 <li v-for="user in onlineUsers">
                     {{ user }}
+
                     <a href="#" :data-username="user" @click="kickUser" v-if="isAdmin">[ kick ]</a>
                 </li>
             </ul>
         </div>
     </div>
 </template>
+
 <script>
-    //import ChatMessage from './ChatMessage.vue'
+    import ChatMessage from './ChatMessage.vue'
     export default {
+        components: { ChatMessage },
         data() {
             return {
                 newMessage: '',
@@ -34,27 +37,24 @@
                 onlineUsers: []
             }
         },
-        props: ['socket'],
-        mounted() {
-            this.socket.on('message received', function(message) {
-                console.log(' message rec ')
-                this.messages.push(message)
+        ready() {
+            let chatbox = this
+            this.$parent.socket.on('message received', function(message) {
+                chatbox.messages.push(message)
             })
-            this.socket.on('user joined', function(message) {
-                console.log(' joined ')
-                this.messages.push(message)
-                this.onlineUsers.push(message.username)
+            this.$parent.socket.on('user joined', function(message) {
+                chatbox.messages.push(message)
+                chatbox.onlineUsers.push(message.username)
             })
-            this.socket.on('user left', function(message) {
-                console.log(' left ')
-                this.messages.push(message)
-                //chatbox.onlineUsers.$remove(message.username)
+            this.$parent.socket.on('user left', function(message) {
+                chatbox.messages.push(message)
+                chatbox.onlineUsers.$remove(message.username)
             })
         },
         methods: {
             sendMessage(event) {
                 event.preventDefault()
-                this.socket.emit('send message', this.newMessage)
+                this.$parent.socket.emit('send message', this.newMessage)
                 this.newMessage = ''
             },
             kickUser(event) {
@@ -62,7 +62,13 @@
                 // Get the username of the user we're kicking
                 let usernameToKick = event.target.getAttribute('data-username')
                 // Tell the server to kick them from the chat
-                this.socket.emit('kick user', usernameToKick)
+                this.$parent.socket.emit('kick user', usernameToKick)
+            }
+        },
+        computed: {
+            // Surely there must be a better way to do this? @TODO
+            isAdmin() {
+                return this.$parent.isAdmin
             }
         }
     }

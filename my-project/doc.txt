@@ -10,3 +10,6 @@
   two components: Slider, navigation (next, prev button, canBack, canPrev, pos)
 
 settings - set component size
+global - device/component dimension, nick name
+
+settings/dispatch - on size change, on nick change, size limitation on device size
