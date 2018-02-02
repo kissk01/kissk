@@ -1,12 +1,6 @@
 <template>
 	<div id="chat">
-		<chat-box v-if="loggedIn" :socket="socket"></chat-box>
-		<div id="chatLogin" v-else>
-			<form action="/" @submit="login">
-				<input type="text" v-model="username" placeholder="User name">
-				<input type="submit" value="Submit">
-			</form>
-		</div>
+		<chat-box v-if="loggedIn" :socket="socket" :nickname="nick" v-on:message="message" v-on:nameChange="nameChange"></chat-box>
 	</div>
 </template>
 
@@ -24,29 +18,28 @@
 	    components: { ChatBox },
 	    sockets:{
 		    connect: function(){
+					this.socket = this.$socket;
+					this.loggedIn = true
 		      console.log('socket connected')
-		    },
-		    customEmit: function(val){
-		      console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
 		    }
-		},
-	    mounted() {
-    		console.log("ready")
-        	//this.socket = io();
-        },
+			},
 	    methods: {
-	        login(event) {
-	            event.preventDefault()
-	            this.socket = this.$socket;
-	            this.loggedIn = true
-	            console.log(" logged in ", this.username)
-	            this.$socket.emit('user logged in', this.username)
-	        }
-	    }
-	    /*computed: {
-	        isAdmin() {
-	            return this.username == 'admin'
-	        }
-	    }*/
+					message() {
+						console.log('from chat message event')
+						this.$emit("message")
+					},
+					componentChange () {
+						console.log('from chat name is: ', this.nick)
+					},
+					nameChange(value) {
+						this.$emit('nameChange', value)
+					}
+	    },
+			props: {
+				nick: {
+					type:String,
+					default: ""
+				}
+      }
 	}
 </script>

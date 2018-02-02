@@ -1,68 +1,82 @@
 <template>
-    <div id="ChatBox">
+    <div id="ChatBox" v-if="loggedIn">
         <div class="col-md-9 ChatBox__Left">
             <div class="ChatBox__List">
-                <chat-message v-for="message in messages" :data="message"></chat-message>
+              <div v-for="data in messages">
+                  <p v-bind:class="[data.currentUser ? 'Message__Author' : 'Message__Authory']">
+                    {{data.message}}</p>
+              </div>
             </div>
-
             <div class="ChatBox__Input">
-                <form @submit="sendMessage" action="/" method="post">
-                    <input type="text" v-model="newMessage" placeholder="Enter your message here">
+                <form @submit.prevent="sendMessage" action="/" method="post">
+                    <input type="text" v-model="newMessage"  placeholder="Enter your message here">
+                    <input type="submit" value="Submit">
                 </form>
             </div>
         </div>
-
-        <div class="col-md-3 ChatBox__Right">
-            <h3>Online Users</h3>
-
-            <ul class="ChatBox__OnlineUsers">
-                <li v-for="user in onlineUsers">
-                    {{ user }}
-                    <a href="#" :data-username="user" @click="kickUser" v-if="isAdmin">[ kick ]</a>
-                </li>
-            </ul>
-        </div>
+    </div>
+    <div id="Chat__Login" v-else>
+        <form action="/" @submit.prevent="login">
+            <input type="text" v-model="username" placeholder="Enter your username...">
+        </form>
     </div>
 </template>
 <script>
-    //import ChatMessage from './ChatMessage.vue'
+    import ChatMessage from './ChatMessage.vue'
     export default {
+        components: { ChatMessage },
         data() {
             return {
                 newMessage: '',
                 messages: [],
-                onlineUsers: []
+                onlineUsers: [],
+                username: this.nickname,
+                myTextString: 'You said',
+                loggedIn: false
             }
         },
-        props: ['socket'],
-        mounted() {
-            this.socket.on('message received', function(message) {
-                console.log(' message rec ')
-                this.messages.push(message)
-            })
-            this.socket.on('user joined', function(message) {
-                console.log(' joined ')
-                this.messages.push(message)
-                this.onlineUsers.push(message.username)
-            })
-            this.socket.on('user left', function(message) {
-                console.log(' left ')
-                this.messages.push(message)
-                //chatbox.onlineUsers.$remove(message.username)
+        props: {
+          socket: {},
+          nickname: {
+            type:String,
+            default: ""
+          }
+        },
+        watch: {
+        	nickname: function(newVal, oldVal) {
+            this.username = newVal
+          }
+        },
+        created: function() {
+            let chatBox = this
+            this.socket.on('message', function(message) {
+              if(chatBox.loggedIn) {
+                chatBox.handleMessage(message)
+                console.log(' message rec ', 'all:', chatBox.messages)
+                chatBox.$emit('message')
+              }
             })
         },
         methods: {
             sendMessage(event) {
-                event.preventDefault()
-                this.socket.emit('send message', this.newMessage)
+                this.socket.emit('message', {message: this.newMessage, user: this.username})
+                console.log('new mess send: ', this.newMessage, this.username)
                 this.newMessage = ''
             },
-            kickUser(event) {
-                event.preventDefault()
-                // Get the username of the user we're kicking
-                let usernameToKick = event.target.getAttribute('data-username')
-                // Tell the server to kick them from the chat
-                this.socket.emit('kick user', usernameToKick)
+            handleMessage(data) {
+              let current = data.message.substring(0,8) === this.myTextString
+              data.currentUser = current
+              current ? "" : data.message += (", user: " + data.user)
+              this.messages.push(data)
+            },
+            login(event) {
+                this.loggedIn = true
+                this.socket.emit('userLoggedIn', this.username)
+                this.$emit('nameChange', this.username)
+            },
+            componentChange() {
+              console.log(this.nickname, this.sliderWidth, 'username from chatbox')
+              this.username = this.nickname
             }
         }
     }
@@ -89,23 +103,14 @@
         box-shadow: -10px 0 40px #F1F1F1;
     }
     .ChatBox__List {
-        height: 90vh;
+        height: 80vh;
         overflow: scroll;
     }
-    .ChatBox__Input {
-        height: 10vh;
-        background: #eee;
-        border-top: 3px solid #ddd;
-        padding: 20px;
-    }
+
     .ChatBox__Input input {
-        width: 100%;
-        background: white;
-        padding: 10px;
+
     }
-    .ChatBox__Input input:focus {
-        outline: none;
-    }
+
     ul.ChatBox__OnlineUsers {
         list-style: none;
         margin: 0;
@@ -118,5 +123,39 @@
         font-size: 16px;
         font-weight: bold;
         color: #999;
+    }
+    p.Message__Author {
+        text-align: right;
+        font-style: italic;
+        color: #999;
+        margin-bottom: 5px;
+    }
+    p.Message__Authory {
+        text-align: left;
+        font-style: bold;
+        color: #000;
+        margin-bottom: 5px;
+    }
+    input[type=text], select {
+        width: 80%;
+        padding: 12px 20px;
+        margin: 1px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type=submit] {
+        width: 15%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    input[type=submit]:hover {
+        background-color: #45a049;
     }
 </style>

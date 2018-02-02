@@ -1,7 +1,6 @@
-<template v-on:child-msg="componentChange()">
+<template>
   <div id="Photos">
-    <button v-on:click='componentChange()'>Button</button>
-    <slider :photos="photoList"></slider>
+    <slider :photos="photoList" :photoWidth="sliderWidth" :photoHeight="sliderHeight"></slider>
   </div>
 </template>
 
@@ -12,11 +11,12 @@
       data() {
         return {
             photoList: [
-              'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg',
               'https://www.computerhope.com/jargon/j/jpg.jpg',
-              'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg',
-              'https://www.computerhope.com/jargon/j/jpg.jpg',
-              'http://netdna.webdesignerdepot.com/uploads/2008/11/sample-graphic.jpg'
+              'http://lorempixel.com/400/200',
+              'http://lorempixel.com/g/400/200/',
+              'http://lorempixel.com/400/200/sports/',
+              'http://lorempixel.com/400/200/sports/Dummy-Text/',
+              'http://lorempixel.com/400/200/sports/1/Dummy-Text/'
             ],
             imageLink0: 'https://www.computerhope.com/jargon/j/jpg.jpg',
             imageLink: '.././assets/logo.png',
@@ -25,7 +25,7 @@
       },
       methods: {
         componentChange: function () {
-          console.log(this.photoList.length, " length parent val:", this.sliderWidth)
+          console.log(this.photoList.length, " length parent val:", this.sliderHeight)
           this.imageLink0 = this.photoList[0]
         },
         componentClick: function (value) {
@@ -35,11 +35,11 @@
       props: {
         sliderWidth: {
           type:Number,
-          default: 600
+          default: 400
         },
         sliderHeight: {
           type: Number,
-          default: 600
+          default: 200
         }
       }
     }

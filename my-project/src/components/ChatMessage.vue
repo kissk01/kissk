@@ -19,7 +19,12 @@
 
 <script>
     export default {
-        props: ['data'],
+        props: ['messageData'],
+        data() {
+            return {
+                data: this.messageData
+            }
+        },
         computed: {
             isAlert() {
                 return this.data.type === 'alert'
