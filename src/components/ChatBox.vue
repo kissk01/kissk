@@ -17,7 +17,7 @@
     </div>
     <div v-else>
         <form action="/" @submit.prevent="login">
-            <input type="text" v-model="username" placeholder="Enter your username...">
+            <input class="chatname" type="text" v-model="username" placeholder="Enter your username...">
         </form>
     </div>
 </template>

@@ -14,6 +14,7 @@ let cssmin = require('gulp-cssmin');
 let sass = require('gulp-sass');
 let path = require('path');
 let fs = require('fs');
+let shell = require('gulp-shell');
 
 gulp.task('js', function () {
   return rollup.rollup({
@@ -81,5 +82,7 @@ gulp.task('serve', function() {
   });
 });
 
+gulp.task("test", shell.task("npm test"));
+
 gulp.task('default', ['scss', 'js', 'templates', 'img']);
-gulp.task('dev', ['default', 'watch', 'serve']);
+gulp.task('dev', ['default', 'watch', 'serve', 'test']);
