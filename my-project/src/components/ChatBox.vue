@@ -1,13 +1,13 @@
 <template>
     <div id="ChatBox" v-if="loggedIn">
-        <div class="col-md-9 ChatBox__Left">
-            <div class="ChatBox__List">
+        <div>
+            <div class="ChatBox-List">
               <div v-for="data in messages">
-                  <p v-bind:class="[data.currentUser ? 'Message__Author' : 'Message__Authory']">
+                  <p v-bind:class="[data.currentUser ? 'Message-User' : 'Message-Guest']">
                     {{data.message}}</p>
               </div>
             </div>
-            <div class="ChatBox__Input">
+            <div>
                 <form @submit.prevent="sendMessage" action="/" method="post">
                     <input type="text" v-model="newMessage"  placeholder="Enter your message here">
                     <input type="submit" value="Submit">
@@ -15,22 +15,20 @@
             </div>
         </div>
     </div>
-    <div id="Chat__Login" v-else>
+    <div v-else>
         <form action="/" @submit.prevent="login">
             <input type="text" v-model="username" placeholder="Enter your username...">
         </form>
     </div>
 </template>
 <script>
-    import ChatMessage from './ChatMessage.vue'
     export default {
-        components: { ChatMessage },
         data() {
             return {
                 newMessage: '',
                 messages: [],
-                onlineUsers: [],
                 username: this.nickname,
+                //for message parse to know if it was sent by myself.
                 myTextString: 'You said',
                 loggedIn: false
             }
@@ -52,31 +50,28 @@
             this.socket.on('message', function(message) {
               if(chatBox.loggedIn) {
                 chatBox.handleMessage(message)
-                console.log(' message rec ', 'all:', chatBox.messages)
                 chatBox.$emit('message')
               }
             })
         },
         methods: {
-            sendMessage(event) {
+            sendMessage() {
                 this.socket.emit('message', {message: this.newMessage, user: this.username})
-                console.log('new mess send: ', this.newMessage, this.username)
+                //empty on send the input
                 this.newMessage = ''
             },
             handleMessage(data) {
+              //current user sent the data.
               let current = data.message.substring(0,8) === this.myTextString
               data.currentUser = current
+              //update with username only reply message, no username on sending by myself.
               current ? "" : data.message += (", user: " + data.user)
               this.messages.push(data)
             },
-            login(event) {
+            login() {
                 this.loggedIn = true
                 this.socket.emit('userLoggedIn', this.username)
-                this.$emit('nameChange', this.username)
-            },
-            componentChange() {
-              console.log(this.nickname, this.sliderWidth, 'username from chatbox')
-              this.username = this.nickname
+                this.$emit('name-change', this.username)
             }
         }
     }
@@ -88,49 +83,19 @@
         height: 100%;
         margin-right: 0;
     }
-    #Chat__ChatBox ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    .ChatBox__Left {
-        padding-right: 0;
-    }
-    .ChatBox__Right {
-        height: 100vh;
-        border-left: 1px solid #eee;
-        background: #F7F7F7;
-        box-shadow: -10px 0 40px #F1F1F1;
-    }
-    .ChatBox__List {
-        height: 80vh;
+
+    .ChatBox-List {
+        height: 70vh;
         overflow: scroll;
     }
 
-    .ChatBox__Input input {
-
-    }
-
-    ul.ChatBox__OnlineUsers {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    h3 {
-        margin-top: 20px;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #999;
-    }
-    p.Message__Author {
+    p.Message-User {
         text-align: right;
         font-style: italic;
         color: #999;
         margin-bottom: 5px;
     }
-    p.Message__Authory {
+    p.Message-Guest {
         text-align: left;
         font-style: bold;
         color: #000;

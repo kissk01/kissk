@@ -1,5 +1,19 @@
 import Vue from 'vue'
-import HelloWorld from '@/components/HelloWorld'
+import HelloWorld from '@/components/Settings'
+
+describe('HelloWorld.vue', () => {
+  it('should render correct contents', () => {
+    const Constructor = Vue.extend(HelloWorld)
+    const vm = new Constructor().$mount()
+    expect(vm.$el.querySelector('.nickname').textContent)
+      .toEqual('')
+  })
+})
+
+
+/*
+import Vue from 'vue'
+import HelloWorld from '@/components/PageChat'
 
 describe('HelloWorld.vue', () => {
   it('should render correct contents', () => {
@@ -9,3 +23,6 @@ describe('HelloWorld.vue', () => {
       .toEqual('Welcome to Your Vue.js App')
   })
 })
+
+
+*/

@@ -1,13 +1,13 @@
 <template>
   <div id="photos">
     <div class="">
-      <a href="#"
+      <a
         class="Slider-navigation-button Slider-navigation-prev"
         v-on:click.prevent="prevSelect()"
         v-bind:class="{ 'Slider-navigation--disabled': !canPrev() }"
         v-html="prevLabel"></a>
       <img :style="{width:sliderWidth+'px', height:sliderHeight+'px'}" v-bind:src="imageLink"/>
-      <a href="#"
+      <a
         class="Slider-navigation-button Slider-navigation-next"
         v-on:click.prevent="nextSelect()"
         v-bind:class="{ 'Slider-navigation--disabled': !canNext() }"
@@ -21,6 +21,7 @@ export default {
       return {
         currentPage: 0,
         photoList: [],
+        //select the first photo by default.
         imageLink: this.photos[0],
         sliderWidth: this.photoWidth,
         sliderHeight: this.photoHeight,
@@ -53,47 +54,50 @@ export default {
         type: String,
         default: "◀"
       },
-      photoWidth: {
+      /**
+       * Photo component width/height parameters.
+       */
+      pwidth: {
         type:Number,
         default: 400
       },
-      photoHeight: {
+      pheight: {
         type: Number,
         default: 200
       }
     },
     watch: {
-      photoWidth: {
+      pwidth: {
         immediate:true,
         handler(newVal, oldVal) {
-          console.log('slider with watch', newVal)
           this.sliderWidth = newVal
         }
       },
-      photoHeight: {
+      pheight: {
         immediate:true,
         handler(newVal, oldVal) {
-          console.log('slider height watch', newVal)
           this.sliderHeight = newVal
         }
       }
     },
     methods: {
-      componentChange() {
-        console.log(this.photoWidth, "from slider")
-      },
+      /*
+       * Decide if there are more next/previous photos.
+      */
       canPrev() {
-        console.log(this.currentPage, 'canPrev w:', this.photoWidth)
         return this.currentPage > 0
       },
       canNext() {
         return this.currentPage < (this.imageCount()-1)
       },
+
       imageCount() {
         return this.photos.length
       },
+      /*
+       * Choose next/prev photo if any.
+      */
       nextSelect() {
-        console.log(this.canNext(), this.currentPage, this.imageCount())
         if(this.canNext()){
           this.currentPage+=1
           this.imageLink = this.photos[this.currentPage]
@@ -105,6 +109,9 @@ export default {
           this.imageLink = this.photos[this.currentPage]
         }
       },
+      /*
+       * Handlers, helpers for swipe gesture.
+       */
       handleMousedown(event) {
         if (!event.touches) { event.preventDefault() }
         this.mousedown = true
@@ -130,6 +137,7 @@ export default {
         }
       }
     },
+
     mounted() {
       if ("ontouchstart" in window) {
         this.$el.addEventListener("touchstart", this.handleMousedown)
@@ -150,21 +158,19 @@ export default {
     box-sizing: border-box;
     color: #000;
     text-decoration: none;
+    font-size: 4em;
+    cursor: pointer;
   }
   .Slider-navigation-next {
     transform: translateY(-50%) translateX(100%);
-    right: 20px;
+    right: 60px;
   }
   .Slider-navigation-prev {
     transform: translateY(-50%) translateX(-100%);
-    left: 20px;
+    left: 60px;
   }
   .Slider-navigation--disabled {
     opacity: 0.3;
     cursor: default;
-  }
-  .Slider-navigation {
-    width: 200px;
-    height:100px;
   }
 </style>

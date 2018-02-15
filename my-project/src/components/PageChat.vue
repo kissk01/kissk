@@ -4,9 +4,9 @@
     v-bind:class="[item.id === 'chat' && isBlinking ? 'blink' : '']">
       {{item.text}}</button>
     <keep-alive>
-      <component id="comp" :is="dynamicComponent" v-on:settingsClick="componentClick"
-      :sliderHeight="photoHeight" :sliderWidth="photoWidth" v-on:message="message" :nick="username"
-      v-on:widthChange="widthChange" v-on:heightChange="heightChange" v-on:nameChange="nameChange">
+      <component id="comp" :is="dynamicComponent"
+      :sheight="photoHeight" :swidth="photoWidth" v-on:message="message" :nick="username"
+      v-on:width-change="widthChange" v-on:height-change="heightChange" v-on:name-change="nameChange">
       </component>
     </keep-alive>
   </div>
@@ -20,14 +20,18 @@
       data() {
         return {
             dynamicComponent: 'chat',
+            //list of components used in main.
             pageList: [
               { id: 'chat', text: 'Chat' },
               { id: 'photos', text: 'Photos' },
               { id: 'settings', text: 'Settings' }
             ],
+            //chat button is blinking - chat message arrived.
             isBlinking: false,
+            //size for photo copoment slider
             photoWidth: 400,
             photoHeight: 200,
+            //editable name for chat component
             username: ""
         }
       },
@@ -37,9 +41,6 @@
           this.dynamicComponent = id
           this.blinkHandler(false)
         },
-        componentClick: function (value) {
-          console.log('emit settingsClick', value, ' val ')
-        },
         widthChange: function (value) {
           this.photoWidth = value
         },
@@ -47,27 +48,32 @@
           this.photoHeight = value
         },
         nameChange: function(value) {
-          console.log('name change from main', value)
           this.username = value
         },
         message: function() {
-          console.log('message received from pageChat')
+          //message received
           this.blinkHandler(true)
         },
         blinkHandler: function (blinkRequest) {
-          console.log('blinkhandler: ',this.dynamicComponent, this.dynamicComponent === "chat")
-          if(blinkRequest && this.dynamicComponent != "chat" && !this.isBlinking /*&& this.loggedIn*/) {
+          //start blink on new message if the component is not selected.
+          if(blinkRequest && this.dynamicComponent != "chat" && !this.isBlinking) {
             this.isBlinking = true
-            console.log("start blink")
+          //stop blink on chat component selection.
           } else if(!blinkRequest && this.isBlinking && this.dynamicComponent === "chat") {
             this.isBlinking = false
-            console.log("stop blink")
           }
         }
       }
     }
 </script>
 <style>
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+  }
   button.blink {
     animation: blinker 1s linear infinite;
   }
