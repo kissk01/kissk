@@ -15,11 +15,15 @@ let sass = require('gulp-sass');
 let path = require('path');
 let fs = require('fs');
 let shell = require('gulp-shell');
+let alias = require('rollup-plugin-alias');
 
 gulp.task('js', function () {
   return rollup.rollup({
     entry: "./src/script.js",
     plugins: [
+      alias({
+        'vue': '../node_modules/vue/dist/vue.js'
+      }),
       rollupNodeResolve(),
       rollupCommonjs(),
       rollupUglify(),

@@ -1,4 +1,4 @@
-import Vue from '../node_modules/vue/dist/vue';
+import Vue from 'vue';
 import app from './components/PageChat.vue';
 import VueSocketIO from 'vue-socket.io'
 
